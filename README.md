@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # MultiSite Clone Duplicator
 * Contributors: pdargham, julienog, daviddaug, globalis
 * Tags: duplicate, clone, copy, duplication, duplicator, factory, multisite, site, blog, network, wpmu, new blog
@@ -263,3 +264,6 @@ wp site duplicate --slug=<slug> --source=<site_id> [--title=<title>]
 The original version of this plugin has been developed by [Julien OGER](https://github.com/julienOG) who keeps following the project carefully.  
 
 Some code for search and replace in SQL serialised data were initialy taken from [Lionel Pointet Wordpress Migration tool](https://github.com/lpointet/wordpress_migration)
+=======
+# duplicator
+>>>>>>> 444baf71aeffb7e8762154f9b427ab9b8f657382
