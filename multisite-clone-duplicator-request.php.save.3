@@ -1,0 +1,122 @@
+<?php 
+
+  //require ( 'preparing_duplicate.php' );
+ 
+ 
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  // Check if the request method is POST
+
+  // Retrieve form data
+  //$name = $_POST['names'];
+  //$email = $_POST['emails'];
+ $data = $_POST['data'];
+  //echo "HERE". var_dump($data); 
+ 
+//$user_id = MUCD_Duplicate::duplicate_site($data);
+  // Return a successful response
+$response = array(
+  'status' => 'success',
+  'message' => 'AJAX request successful.',
+  'data' => $data // Optional: Include additional data in the response
+);
+
+// Set the response content type to JSON
+header('Content-Type: application/json');
+
+// Output the response as JSON
+echo json_encode($response);
+
+// Terminate the PHP script
+exit(); 
+
+  // Process the data
+  // ...
+
+  // Return a response if needed
+ // echo 'Form submitted successfully.';
+}	
+	
+�аа�
+function duplicate($data){
+ global $wpdb;
+        $form_message = array();
+        $wpdb->hide_errors();
+
+        // self::init_log($data);
+
+        $email = $data['email'];
+        $domain = $data['domain'];
+        $newdomain = $data['newdomain'];
+        $path = $data['path'];
+        $title = $data['title'];
+        $from_site_id = $data['from_site_id'];
+        $keep_users = $data['keep_users'];
+        $copy_file = $data['copy_files'];
+        $public = $data['public'];
+        $network_id = $data['network_id'];
+
+        // write_log('Start site duplication : from site ' . $from_site_id);
+        // write_log('Admin email : ' . $email);
+        // write_log('Domain : ' . $newdomain);
+        // write_log('Path : ' . $path);
+        // write_log('Site title : ' . $title);
+
+        // $user_id = create_admin($email, $domain);
+        var_dump($user_id);
+        printf("switch");
+        if (is_wp_error($user_id)) {
+            $form_message['error'] = $user_id->get_error_message();
+            return $form_message;
+        }
+
+        // Create new site
+
+        switch_to_blog(1);
+        $to_site_id = wpmu_create_blog($newdomain, $path, $title, $user_id, array('public' => $public), $network_id);
+        $wpdb->show_errors();
+
+        if (is_wp_error($to_site_id)) {
+            $form_message['error'] = $to_site_id->get_error_message();
+            return $form_message;
+        }
+
+        // User rights adjustments
+        if (!is_super_admin($user_id) && !get_user_option('primary_blog', $user_id)) {
+            update_user_option($user_id, 'primary_blog', $to_site_id, true);
+        }
+
+        bypass_server_limit();
+
+        // Copy Site - File
+        if ($copy_file == 'yes') {
+            // do_action('mucd_before_copy_files', $from_site_id, $to_site_id);
+            $result = copy_files($from_site_id, $to_site_id);
+            // do_action('mucd_after_copy_files', $from_site_id, $to_site_id);
+        }
+
+        // Copy Site - Data
+        // do_action('mucd_before_copy_data', $from_site_id, $to_site_id);
+        $result = copy_data($from_site_id, $to_site_id);
+        // do_action('mucd_after_copy_data', $from_site_id, $to_site_id);
+
+        // Copy Site - Users
+        // if ($keep_users == 'yes') {
+        //     do_action('mucd_before_copy_users', $from_site_id, $to_site_id);
+        //     $result = copy_users($from_site_id, $to_site_id);
+        //     do_action('mucd_after_copy_users', $from_site_id, $to_site_id);
+        // }
+
+        update_blog_option($to_site_id, 'mucd_duplicable', "no");
+
+        $form_message['msg'] = MUCD_NETWORK_PAGE_DUPLICATE_NOTICE_CREATED;
+        $form_message['site_id'] = $to_site_id;
+
+        // write_log('End site duplication : new site ID = ' . $to_site_id);
+
+        wp_cache_flush();
+
+        return $form_message;
+}
+Ааа
+?> 

@@ -1,0 +1,41 @@
+<?php 
+
+	require WP_PLUGIN_DIR . '/multisite-clone-duplicator/multisite-clone-duplicator.php';
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  // Check if the request method is POST
+
+  // Retrieve form data
+  //$name = $_POST['names'];
+  
+//$email = $_POST['emails'];
+  $data = $_POST['data'];
+  $user_id = MUCD_Duplicate::duplicate_site($data);
+  // Return a successful response
+$response = array(
+  'status' => 'success',
+  'message' => 'AJAX request successful.',
+  'data' => $user_id // Optional: Include additional data in the response
+);
+
+// Set the response content type to JSON
+header('Content-Type: application/json');
+
+// Output the response as JSON
+echo json_encode($response);
+
+// Terminate the PHP script
+exit(); 
+
+  // Process the data
+  // ...
+
+  // Return a response if needed
+  echo 'Form submitted successfully.';
+}	
+	
+
+
+
+
+
+?> 
